@@ -10,6 +10,11 @@ import type { AdminNotification } from '../lib/types'
 type Tab = 'todos' | 'nao_verificados' | 'bloqueados' | 'online' | 'novos_hoje' | 'inativos'
 type CommissionFilterMode = 'mes' | 'intervalo'
 
+// Divisão da comissão (percentagens fixas, somam 100)
+const SPLIT_KELVIN_PCT = 35
+const SPLIT_PARTNER_PCT = 40
+const SPLIT_EDSON_PCT = 25
+
 const MONTH_NAMES = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
@@ -199,8 +204,6 @@ export default function AdminPage() {
       // e recalcula os totais e a divisão da comissão só com esse app.
       const nexoraRows = (data.breakdown || []).filter((b) => String(b.app_id) === String(DERIV_APP_ID))
       const totalMarkup = nexoraRows.reduce((acc, b) => acc + (b.app_markup_usd || 0), 0)
-      const kPct = data.commission_split?.kelvin_pct ?? 0
-      const pPct = data.commission_split?.platform_pct ?? 0
       setMarkup({
         ...data,
         breakdown: nexoraRows,
@@ -210,9 +213,12 @@ export default function AdminPage() {
         total_contract_count: nexoraRows.reduce((acc, b) => acc + (b.contract_count || 0), 0),
         total_client_count: nexoraRows.reduce((acc, b) => acc + (b.client_count || 0), 0),
         commission_split: {
-          ...data.commission_split,
-          kelvin: (totalMarkup * kPct) / 100,
-          platform: (totalMarkup * pPct) / 100,
+          kelvin_pct: SPLIT_KELVIN_PCT,
+          partner_pct: SPLIT_PARTNER_PCT,
+          edson_pct: SPLIT_EDSON_PCT,
+          kelvin: (totalMarkup * SPLIT_KELVIN_PCT) / 100,
+          partner: (totalMarkup * SPLIT_PARTNER_PCT) / 100,
+          edson: (totalMarkup * SPLIT_EDSON_PCT) / 100,
         },
       })
     } catch (err) {
@@ -452,7 +458,7 @@ export default function AdminPage() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
               <div>
                 <p style={{ color: 'var(--white)', fontWeight: 700, fontSize: 15 }}>Relatório de Comissão</p>
-                <p style={{ color: 'var(--text-faint)', fontSize: 12, marginTop: 2 }}>Markup da app Nexora na Deriv, dividido entre Kelvin e a plataforma</p>
+                <p style={{ color: 'var(--text-faint)', fontSize: 12, marginTop: 2 }}>Markup da app Nexora na Deriv, dividido entre Kelvin, Partner e Edson</p>
               </div>
 
               {/* Alternar Mês / Intervalo */}
@@ -541,7 +547,7 @@ export default function AdminPage() {
                 <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
                   <div className="card" style={{ flex: '1 1 200px', padding: '16px 18px', background: 'var(--bg-card-hi)' }}>
                     <p style={{ color: 'var(--text-faint)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
-                      Comissão total ({markup.commission_split.kelvin_pct}/{markup.commission_split.platform_pct})
+                      Comissão total
                     </p>
                     <p className="tabular" style={{ color: 'var(--white)', fontSize: 26, fontWeight: 700 }}>
                       {formatUsd(markup.total_app_markup_usd)}
@@ -557,10 +563,18 @@ export default function AdminPage() {
                   </div>
                   <div className="card" style={{ flex: '1 1 150px', padding: '16px 18px' }}>
                     <p style={{ color: 'var(--text-faint)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
-                      Plataforma ({markup.commission_split.platform_pct}%)
+                      Partner ({markup.commission_split.partner_pct}%)
                     </p>
                     <p className="tabular" style={{ color: 'var(--green)', fontSize: 20, fontWeight: 700 }}>
-                      {formatUsd(markup.commission_split.platform)}
+                      {formatUsd(markup.commission_split.partner)}
+                    </p>
+                  </div>
+                  <div className="card" style={{ flex: '1 1 150px', padding: '16px 18px' }}>
+                    <p style={{ color: 'var(--text-faint)', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 6 }}>
+                      Edson ({markup.commission_split.edson_pct}%)
+                    </p>
+                    <p className="tabular" style={{ color: '#f5a623', fontSize: 20, fontWeight: 700 }}>
+                      {formatUsd(markup.commission_split.edson)}
                     </p>
                   </div>
                 </div>
