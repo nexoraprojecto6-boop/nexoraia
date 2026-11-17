@@ -46,20 +46,18 @@ function termsAlreadyAccepted(): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Marca — logótipo 100% em SVG/código, sem ficheiro de imagem
+// Marca — 3 velas japonesas (vermelha, verde, vermelha), 100% em SVG/código, sem ficheiro de imagem
 // ---------------------------------------------------------------------------
 function BrandMark({ size = 40 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 28 28" fill="none" className="brand-mark">
-      <path d="M14 1L27 14L14 27L1 14L14 1Z" stroke="url(#nxGradLogin)" strokeWidth="1.6" />
-      <path d="M8 16.5L11.5 12L15 15.5L20 9" stroke="url(#nxGradLogin)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <defs>
-        <linearGradient id="nxGradLogin" x1="0" y1="0" x2="28" y2="28" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#ffffff" />
-          <stop offset="0.55" stopColor="var(--blue-hi)" />
-          <stop offset="1" stopColor="var(--red-hi)" />
-        </linearGradient>
-      </defs>
+      {/* 3 velas japonesas: vermelha, verde, vermelha */}
+      <line x1="5" y1="4" x2="5" y2="24" stroke="var(--red-hi)" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="2.5" y="8" width="5" height="10" rx="1" fill="var(--red-hi)" />
+      <line x1="14" y1="2" x2="14" y2="25" stroke="var(--green)" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="11.5" y="5" width="5" height="13" rx="1" fill="var(--green)" />
+      <line x1="23" y1="6" x2="23" y2="26" stroke="var(--red-hi)" strokeWidth="1.6" strokeLinecap="round" />
+      <rect x="20.5" y="10" width="5" height="11" rx="1" fill="var(--red-hi)" />
     </svg>
   )
 }
